@@ -4,6 +4,8 @@ This project demonstrates a **Daraz-style product listing screen** built with Fl
 
 The implementation strictly follows interview-level constraints and is designed to showcase **senior-level understanding of scrolling and gestures in Flutter**.
 
+🚀 [Live Demonstration](https://drive.google.com/file/d/1zXEDUYbIZwMa6CkUDIcWYQa6oQ7RQVX6/view?usp=sharing)
+
 ---
 
 ## ✅ Interview Constraints Satisfied
