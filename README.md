@@ -56,12 +56,10 @@ Smooth scrolling, no gesture conflicts, stable scroll position, and predictable 
 
 ### 1️⃣ How horizontal swipe is implemented
 
-- A **top-level `GestureDetector`** wraps the entire screen
-- Horizontal swipe intent is detected using `onHorizontalDragEnd`
-- Swipe **velocity** (not drag distance) is evaluated
-- When a velocity threshold is crossed:
-  - `TabController.animateTo()` is triggered
-- Vertical scrolling is **never intercepted or affected**
+- Horizontal swipe is handled using a `PageView`
+- `PageView` manages swipe velocity and gesture detection internally
+- `onPageChanged` is used to synchronize the `TabController`
+- Vertical scrolling is isolated by disabling inner scroll physics
 
 **Why this approach:**
 - `PageView` would introduce another scrollable and gesture owner
@@ -89,12 +87,13 @@ Smooth scrolling, no gesture conflicts, stable scroll position, and predictable 
 ### 3️⃣ Trade-offs / Limitations
 
 **Trade-off**
-- Horizontal swipe does not show partial page-drag visuals like `PageView`
+- Uses `PageView` for horizontal navigation, which introduces an additional
+  horizontal scrollable alongside the main vertical `CustomScrollView`
 
-**Why this is acceptable**
-- Preserves strict single-scroll architecture
-- Avoids fragile scroll synchronization
-- Fully satisfies the interview’s architectural constraints
+**Why acceptable here**
+- Inner vertical scrolling is explicitly disabled
+- Vertical scroll ownership remains predictable
+- Horizontal swipe experience feels natural and responsive
 
 ---
 
