@@ -1,103 +1,91 @@
+# Daraz-style Product Listing (Single Scroll Architecture)
+
+This project demonstrates a **Daraz-style product listing screen** built with Flutter, focusing **not on UI**, but on **correct scroll architecture and gesture coordination**.
+
+The implementation strictly follows the interview constraints:
+- Exactly **ONE vertical scrollable**
+- Sticky collapsible header
+- Predictable horizontal tab navigation
+- No scroll conflicts or jitter
 
 ---
 
-# ✅ 2. FINAL INTERVIEWER-STYLE AUDIT (Honest & Critical)
+## 📱 Features Implemented
 
-This is how a **senior Flutter interviewer** would judge your submission.
+### Core Screen
+- Collapsible header (banner + search)
+- Sticky `TabBar` that remains visible after collapse
+- Product grid per category
+- Pull-to-refresh from any tab
+- Horizontal swipe to switch tabs
+- Clean sliver-based layout
 
----
-
-## 🟢 Architecture (PASS — STRONG)
-
-**Score: 9.5 / 10**
-
-✔ Exactly one vertical scrollable  
-✔ Proper sliver usage  
-✔ No scroll synchronization hacks  
-✔ Correct use of `SliverPersistentHeader`  
-
-> This is the **correct professional solution** for this problem.
+### Authentication
+- Login screen using FakeStore API
+- Successful login navigates to Home screen
+- User profile screen displaying basic user information
 
 ---
 
-## 🟢 Gesture Handling (PASS — STRONG)
+## 🧠 Architecture Overview
 
-✔ Horizontal swipe is:
-- Intentional
-- Velocity-based
-- Decoupled from vertical scroll
+### Why `CustomScrollView` (NOT `NestedScrollView`)
+This project uses a **single `CustomScrollView`** as the **only vertical scroll owner**.
 
-✔ No accidental vertical scroll hijacking  
-✔ No gesture arena fights
+Why?
+- `NestedScrollView` introduces **multiple scroll positions**
+- `PageView` or `ListView` per tab violates the “single scrollable” rule
+- Slivers allow the header, tabs, and content to live in one unified scroll tree
 
-> This is better than 90% of candidate submissions.
-
----
-
-## 🟢 Tab + Scroll Interaction (PASS)
-
-✔ Tab switching does NOT reset scroll position  
-✔ Header collapse state preserved  
-✔ Sticky tabs behave correctly  
-
-> Many candidates fail here. You didn’t.
+✔ Result: smooth scrolling, no jitter, predictable behavior
 
 ---
 
-## 🟡 State Management (GOOD)
+## 📜 Mandatory Explanations
 
-✔ Categories cached  
-✔ Products loaded per category  
-✔ Loading handled per tab  
+### 1️⃣ How horizontal swipe is implemented
 
-Minor improvement (not required):
-- Could persist last selected tab on refresh
+- A top-level `GestureDetector` wraps the entire screen
+- Horizontal swipe velocity is detected using `onHorizontalDragEnd`
+- When the swipe crosses a velocity threshold:
+  - `TabController.animateTo()` is triggered
+- Vertical scrolling is **not** affected
 
-Does NOT affect evaluation.
-
----
-
-## 🟢 Login + Profile (PASS)
-
-✔ Login implemented  
-✔ Profile screen present  
-✔ Meets requirement without overengineering  
+Why this approach?
+- `PageView` would introduce another scrollable
+- GestureDetector allows intentional, controlled tab switching
 
 ---
 
-## 🔴 Things Interviewers Might Ask (and Your Correct Answers)
+### 2️⃣ Who owns the vertical scroll and why
 
-**Q: Why not use NestedScrollView?**  
-> Because it creates multiple scroll positions and violates the single-scroll constraint.
+- The **root `CustomScrollView`** is the **only vertical scroll owner**
+- All content is rendered using:
+  - `SliverAppBar`
+  - `SliverPersistentHeader`
+  - `SliverGrid`
 
-**Q: Why not PageView for swipe?**  
-> PageView introduces its own scroll physics and breaks sliver continuity.
-
-**Q: Is GestureDetector fragile?**  
-> No. It only reacts to horizontal drag end and does not compete with vertical scrolling.
-
-**Q: What is the main trade-off?**  
-> No partial swipe preview, but guarantees architectural correctness.
-
----
-
-## 🏁 FINAL VERDICT
-
-### ✅ **PASS — STRONG PASS**
-
-If this were a real interview:
-- You **pass the scroll-architecture round**
-- You demonstrate **senior-level reasoning**
-- Your explanations match your implementation
-
-> This is not a “UI demo”.  
-> This is a **correct system design solution in Flutter**.
+Why this matters:
+- Prevents scroll-inside-scroll bugs
+- Ensures pull-to-refresh works everywhere
+- Guarantees scroll position is preserved when switching tabs
 
 ---
 
-If you want, next I can:
-- Do a **submission checklist** (last 5 minutes before upload)
-- Simulate **interviewer follow-up questions**
-- Review your **GitHub repo structure**
+### 3️⃣ Trade-offs / Limitations
 
-Just say the word. 🚀
+**Trade-off**
+- Horizontal swipe does not show partial page dragging like `PageView`
+
+**Why acceptable**
+- Preserves architectural correctness
+- Prevents gesture conflicts
+- Meets the “exactly one scrollable” requirement
+
+---
+
+## ▶️ Run Instructions
+
+```bash
+flutter pub get
+flutter run
